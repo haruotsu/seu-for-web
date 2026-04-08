@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lunar Web — 月面でWebを動かす物理学</title>
+    <link rel="stylesheet" href="/src/ui/styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Lunar Web Engineering</p>
+        <h1>
+          月面で、Webを<br />
+          動かすということ。
+        </h1>
+        <p class="lede">
+          光速、真空、宇宙線。<br />
+          地球で当たり前だった3つの前提が崩れたとき、<br />
+          私たちのコードは何を要求されるのか。
+        </p>
+        <a class="hero-cta" href="#latency">体感する →</a>
+      </div>
+      <div class="hero-orb" aria-hidden="true"></div>
+    </header>
+
+    <main>
+      <!-- ============================================= -->
+      <section id="latency" class="lab">
+        <div class="lab-head">
+          <p class="chapter">Chapter 01</p>
+          <h2>光は、間に合わない。</h2>
+          <p class="sub">
+            地球—月の片道 384,400 km。光速で往復しても 2.56 秒。<br />
+            強一貫性（Raft / Paxos）はこの壁の前で凍りつきます。
+          </p>
+        </div>
+
+        <div class="lab-grid">
+          <div class="card">
+            <div class="card-header">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green"></span>
+              <span class="card-title">checkout.minne.lunar</span>
+            </div>
+            <div class="card-body">
+              <div class="mode-toggle" role="tablist">
+                <button data-mode="strong" class="mode active" role="tab">Strong Consistency</button>
+                <button data-mode="eventual" class="mode" role="tab">Eventual Consistency</button>
+              </div>
+
+              <div class="terminal" id="latency-terminal" aria-live="polite"></div>
+
+              <button id="latency-run" class="primary">在庫を1つ確保する</button>
+              <p class="footnote" id="latency-summary">RTT: <strong>2.56s</strong> / 往復1回あたりの待ち時間</p>
+            </div>
+          </div>
+
+          <aside class="insight">
+            <h3>改善のヒント</h3>
+            <ul>
+              <li><strong>合意形成は地球側に閉じる。</strong>月面ノードは「キャッシュ」と「読み取り」に専念。</li>
+              <li><strong>CRDT</strong> や <strong>vector clock</strong> で結果整合性を設計に組み込む。</li>
+              <li>TCPタイムアウトは <code>5s+</code> へ。Keep-Aliveは長め、再送は少なめ。</li>
+              <li>UIは「楽観的更新（optimistic UI）」前提で組む。</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ============================================= -->
+      <section id="thermal" class="lab dark">
+        <div class="lab-head">
+          <p class="chapter">Chapter 02</p>
+          <h2>熱は、逃げない。</h2>
+          <p class="sub">
+            真空には対流も伝導もありません。<br />
+            排熱はステファン＝ボルツマンの放射のみ。冗長なループは融解への直行便です。
+          </p>
+        </div>
+
+        <div class="lab-grid">
+          <div class="card thermal-card">
+            <div class="reactor">
+              <div class="reactor-core" id="reactor-core"></div>
+              <div class="reactor-rings"></div>
+            </div>
+
+            <div class="readout">
+              <div>
+                <span class="readout-label">Core Temperature</span>
+                <span class="readout-value" id="thermal-temp">—</span>
+              </div>
+              <div>
+                <span class="readout-label">Power Draw</span>
+                <span class="readout-value" id="thermal-power">— W</span>
+              </div>
+            </div>
+
+            <div class="slider-row">
+              <label>処理量 (req/s)</label>
+              <input type="range" id="thermal-load" min="1" max="2000" value="200" />
+              <span id="thermal-load-value">200</span>
+            </div>
+
+            <div class="slider-row">
+              <label>放熱面積 (m²)</label>
+              <input type="range" id="thermal-area" min="1" max="40" step="0.5" value="6" />
+              <span id="thermal-area-value">6.0</span>
+            </div>
+
+            <div class="algo-toggle">
+              <button data-algo="linear" class="active">O(n) アルゴリズム</button>
+              <button data-algo="quadratic">O(n²) アルゴリズム</button>
+            </div>
+
+            <p class="warning" id="thermal-warning"></p>
+          </div>
+
+          <aside class="insight">
+            <h3>改善のヒント</h3>
+            <ul>
+              <li><strong>計算量はそのまま熱量。</strong>O(n²) を O(n log n) に落とすことが冷却設計。</li>
+              <li>TDP上限に応じた <strong>動的スロットリング</strong>と<strong>ジョブ優先度キュー</strong>を実装。</li>
+              <li>放熱フィン（表面積 A）を物理設計で確保。フィンが小さい = アルゴ最適化で稼ぐ。</li>
+              <li>不要なポーリング・ループは即削除。アイドル時はsleepではなく <strong>halt</strong>。</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ============================================= -->
+      <section id="seu" class="lab">
+        <div class="lab-head">
+          <p class="chapter">Chapter 03</p>
+          <h2>ビットは、勝手に反転する。</h2>
+          <p class="sub">
+            銀河宇宙線がメモリを撃ち抜きます。<br />
+            「フラグが0→1に変わる」物理確率は、もう無視できません。
+          </p>
+        </div>
+
+        <div class="lab-grid">
+          <div class="card">
+            <div class="seu-display">
+              <div class="seu-column">
+                <p class="seu-title">Raw（無防備）</p>
+                <div class="bits" id="bits-raw"></div>
+                <p class="seu-status" id="status-raw">integrity: 100%</p>
+              </div>
+              <div class="seu-column">
+                <p class="seu-title">Hamming(7,4)</p>
+                <div class="bits" id="bits-hamming"></div>
+                <p class="seu-status" id="status-hamming">corrected: 0</p>
+              </div>
+              <div class="seu-column">
+                <p class="seu-title">TMR (×3)</p>
+                <div class="bits" id="bits-tmr"></div>
+                <p class="seu-status" id="status-tmr">recovered: 0</p>
+              </div>
+            </div>
+
+            <div class="slider-row">
+              <label>宇宙線フラックス</label>
+              <input type="range" id="seu-rate" min="1" max="100" value="20" />
+              <span id="seu-rate-value">20</span>
+            </div>
+
+            <div class="seu-controls">
+              <button id="seu-toggle" class="primary">シミュレーション開始</button>
+              <button id="seu-reset" class="ghost">リセット</button>
+            </div>
+          </div>
+
+          <aside class="insight">
+            <h3>改善のヒント</h3>
+            <ul>
+              <li><strong>ECC / Hamming</strong> を Redis や key-value 層の<em>ソフトウェアレイヤー</em>に組み込む。</li>
+              <li>クリティカルなフラグは <strong>TMR (3冗長)</strong> + 多数決で守る。</li>
+              <li>定期 <strong>scrubbing</strong>（読み出し→訂正→書き戻し）でエラーの累積を防ぐ。</li>
+              <li>所有権・課金・在庫など「反転すると損害」の値だけを優先的に冗長化。</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <footer class="outro">
+        <p>
+          Webエンジニアリングは、いつしか<br />
+          <strong>応用物理学</strong>になる。
+        </p>
+        <p class="credit">— Lunar Web Lab, 2026</p>
+      </footer>
+    </main>
+
+    <script type="module" src="/src/ui/main.js"></script>
+  </body>
+</html>
