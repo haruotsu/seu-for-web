@@ -621,4 +621,29 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 14px;
   font-weight: 400;
   color: var(--ink-soft);
+  margin-bottom: 18px;
+}
+
+.outro .repo {
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.outro .repo a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 980px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
+}
+
+.outro .repo a:hover {
+  color: var(--ink);
+  border-color: rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
 }
