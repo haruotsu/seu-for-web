@@ -3,8 +3,103 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary -->
     <title>Lunar Web — 月面でWebを動かす物理学</title>
+    <meta
+      name="description"
+      content="光速遅延・真空の排熱・宇宙線によるビット反転。地球で当たり前だった3つの前提が崩れたとき、Webエンジニアリングは応用物理学になる。CAP定理・Stefan–Boltzmann則・Hamming符号を、ブラウザで体感する学習用アプリ。"
+    />
+    <meta
+      name="keywords"
+      content="月面, Web, 分散システム, CAP定理, 結果整合性, Raft, ステファン・ボルツマン, 放射冷却, 宇宙線, SEU, ビット反転, Hamming符号, TMR, 学習, インタラクティブ"
+    />
+    <meta name="author" content="haruotsu" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="canonical" href="https://www.space-web-engineering.com/" />
+
+    <!-- Robots -->
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Lunar Web" />
+    <meta property="og:url" content="https://www.space-web-engineering.com/" />
+    <meta property="og:title" content="Lunar Web — 月面でWebを動かす物理学" />
+    <meta
+      property="og:description"
+      content="光速遅延・放射冷却・宇宙線。3つの物理現象がWebインフラに何を要求するかをブラウザで体感する。"
+    />
+    <meta property="og:locale" content="ja_JP" />
+    <meta
+      property="og:image"
+      content="https://www.space-web-engineering.com/og.svg"
+    />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Lunar Web — 月面でWebを動かす物理学" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Lunar Web — 月面でWebを動かす物理学" />
+    <meta
+      name="twitter:description"
+      content="光速遅延・放射冷却・宇宙線。3つの物理現象がWebインフラに何を要求するかをブラウザで体感する。"
+    />
+    <meta
+      name="twitter:image"
+      content="https://www.space-web-engineering.com/og.svg"
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Lunar Web",
+        "alternateName": "月面でWebを動かす物理学",
+        "url": "https://www.space-web-engineering.com/",
+        "description": "光速遅延・真空の排熱・宇宙線によるビット反転を体感する、Webエンジニア向けのインタラクティブ学習アプリ。",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "inLanguage": "ja",
+        "author": {
+          "@type": "Person",
+          "name": "haruotsu",
+          "url": "https://github.com/haruotsu"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "JPY"
+        },
+        "isAccessibleForFree": true,
+        "license": "https://opensource.org/licenses/MIT",
+        "codeRepository": "https://github.com/haruotsu/seu-for-web"
+      }
+    </script>
+
     <link rel="stylesheet" href="/src/ui/styles.css" />
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$']],
+          displayMath: [['$$', '$$']]
+        },
+        svg: { fontCache: 'global' }
+      };
+    </script>
+    <script
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+    ></script>
   </head>
   <body>
     <header class="hero">
@@ -34,6 +129,38 @@
             地球—月の片道 384,400 km。光速で往復しても 2.56 秒。<br />
             強一貫性（Raft / Paxos）はこの壁の前で凍りつきます。
           </p>
+
+          <div class="math-card">
+            <div class="math-formula">
+              $$RTT_{\min} = \frac{2L}{c}$$
+            </div>
+            <div class="math-plug">
+              $L = 3.844 \times 10^{8}\,\text{m}$、$c = 2.998 \times 10^{8}\,\text{m/s}$ を代入：
+              <strong>$RTT \approx 2.56\,\text{s}$</strong>
+            </div>
+            <div class="math-plug">
+              Raft の確定までに最低3往復必要：
+              $3 \times 2.56 = $ <strong>$7.68\,\text{s}$</strong>
+            </div>
+
+            <div class="implication">
+              <span class="impl-label">起きること</span>
+              <p>
+                「在庫を1個確保する」だけのボタンに <strong>7.7秒</strong> かかる。Web の体感閾値（2秒）を3倍以上超え、ユーザーは離脱する。
+                強一貫性（Strong Consistency）は仕様の問題ではなく、物理的に成立しない。
+              </p>
+            </div>
+
+            <div class="action">
+              <span class="action-label">この章で試せる打ち手</span>
+              <ul>
+                <li>右のターミナルで <strong>Strong / Eventual</strong> を切り替え、体感レイテンシがどう変わるか観察する</li>
+                <li>合意形成（Raft/Paxos）は <strong>地球側のクラスタに閉じる</strong>。月面ノードは読み取りキャッシュ＋書き込みプロキシに徹する</li>
+                <li>書き込みは <strong>CRDT</strong> でローカル先行更新 → 地球と非同期 gossip。UI は楽観的更新で 0.02 秒に</li>
+                <li>TCP のタイムアウトは $\geq 5\,\text{s}$、HTTP リトライは指数バックオフで 3 回まで</li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <div class="lab-grid">
@@ -78,6 +205,39 @@
             真空には対流も伝導もありません。<br />
             排熱はステファン＝ボルツマンの放射のみ。冗長なループは融解への直行便です。
           </p>
+
+          <div class="math-card">
+            <div class="math-formula">
+              $$Q = \epsilon \sigma A (T^{4} - T_{0}^{4}) \quad \Longrightarrow \quad T = \left(\frac{P}{\epsilon \sigma A} + T_{0}^{4}\right)^{1/4}$$
+            </div>
+            <div class="math-plug">
+              放射率 $\epsilon = 0.9$、$\sigma = 5.67 \times 10^{-8}\,\text{W/m}^2\text{K}^4$、月夜の背景 $T_{0} = 120\,\text{K}$、放熱面積 $A = 2\,\text{m}^2$
+            </div>
+            <div class="math-plug">
+              消費電力 $P = 2{,}000\,\text{W}$ → $T \approx 374\,\text{K} \approx $ <strong>$101°\text{C}$</strong>
+            </div>
+            <div class="math-plug">
+              同じ負荷を $O(n^{2})$ で書くと処理量は $\times 200$ 倍に膨らみ → $T \approx $ <strong>$1{,}403°\text{C}$</strong>（シリコン融点 1414°C 寸前）
+            </div>
+
+            <div class="implication">
+              <span class="impl-label">起きること</span>
+              <p>
+                対流も伝導もない真空では、計算によって生まれた熱は <strong>放射でしか逃げない</strong>。アルゴリズムの計算量はそのまま消費電力＝発熱量として基板に積もり、シリコンの融点を超えれば機器は止まる。
+              </p>
+            </div>
+
+            <div class="action">
+              <span class="action-label">この章で試せる打ち手</span>
+              <ul>
+                <li>右のスライダーで <strong>処理量</strong>と<strong>放熱面積</strong>を動かし、コアの色がどう変わるかを観察する</li>
+                <li><strong>O(n) ↔ O(n²)</strong> を切り替えると、同じリクエスト数でも温度がどれほど跳ねるかが見える</li>
+                <li>計算量を $O(n^{2}) \to O(n \log n)$ に落とすことを「冷却設計」として評価する。N+1 クエリ・空ループ・無駄な再レンダリングは即削除</li>
+                <li>放熱面積 $A$ を物理的に拡大できないなら、<strong>TDP 上限ベースの動的スロットリング</strong>とジョブ優先度キューで負荷自体を平準化する</li>
+                <li>アイドル時は <code>sleep</code> ではなく <code>halt</code>。実行していなくても消費される電力をゼロに近づける</li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <div class="lab-grid">
@@ -139,6 +299,40 @@
             銀河宇宙線がメモリを撃ち抜きます。<br />
             「フラグが0→1に変わる」物理確率は、もう無視できません。
           </p>
+
+          <div class="math-card">
+            <div class="math-formula">
+              $$R(t) = e^{-\Gamma t}, \quad \Gamma = \lambda \cdot N_{\text{bits}}$$
+            </div>
+            <div class="math-plug">
+              月面でのSEU率はおおよそ $\lambda \approx 10^{-7}\,\text{errors/bit/day}$（地上の数百〜数千倍）
+            </div>
+            <div class="math-plug">
+              16 GB の RAM = $N = 1.28 \times 10^{11}\,\text{bits}$ →
+              <strong>1日あたり約 $1.28 \times 10^{4}$ 回のビット反転</strong>
+            </div>
+            <div class="math-plug">
+              そのうちの1ビットが「在庫数」「所有権フラグ」「課金額」の上位ビットに当たる確率は <strong>毎日数十回オーダー</strong>
+            </div>
+
+            <div class="implication">
+              <span class="impl-label">起きること</span>
+              <p>
+                銀河宇宙線がメモリセルを撃ち抜き、ビットが勝手に反転する。エラーログには残らず、ドメインの所有者フラグや在庫数が <strong>原因不明のまま書き換わる</strong>。地上ではほぼ無視できる事象が、月面では毎日数十回の規模で発生する。
+              </p>
+            </div>
+
+            <div class="action">
+              <span class="action-label">この章で試せる打ち手</span>
+              <ul>
+                <li>右のスライダーで <strong>宇宙線フラックス</strong>を上げ、Raw / Hamming / TMR の3列がどう壊れ・どう直るかを観察する</li>
+                <li><strong>Hamming(7,4)</strong>: 25% の冗長で 1 ビット訂正。Redis や K-V ストアのソフトウェアレイヤーに組み込む</li>
+                <li><strong>TMR (3冗長 + 多数決)</strong>: 200% の冗長だが「絶対に反転して欲しくない値」（所有権・課金・在庫）に限定して使う</li>
+                <li>定期的な <strong>scrubbing</strong>（読み出し→訂正→書き戻し）でエラーの累積を防ぐ</li>
+                <li>「全データを冗長化する」のではなく、<strong>反転した時の損害額で優先度を決める</strong>のがコスト最適化の第一歩</li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <div class="lab-grid">
